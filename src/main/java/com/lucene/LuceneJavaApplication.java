@@ -1,11 +1,19 @@
 package com.lucene;
 
+import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
+import org.apache.lucene.analysis.core.LowerCaseTokenizer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.ngram.NGramTokenFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -44,7 +52,7 @@ public class LuceneJavaApplication {
 		try {
 			Path path = Paths.get(indexDir);
 			Directory directory = FSDirectory.open(path);
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getWhitespaceAnalyzer());
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getNGramAnalyser());
 			indexWriter = new IndexWriter(directory, indexWriterConfig);
 		} catch (Exception e) {
 			LOGGER.error("Exception occured {}", e);
@@ -68,14 +76,34 @@ public class LuceneJavaApplication {
 		return indexSearcher;
 	}
 
-	@Bean
+	@Bean(
+		value = "whitespaceAnalyzer")
 	public WhitespaceAnalyzer getWhitespaceAnalyzer() {
 		return new WhitespaceAnalyzer();
 	}
 
-	@Bean
+	@Bean(
+		value = "standardAnalyzer")
 	public StandardAnalyzer getStandardAnalyzer() {
 		return new StandardAnalyzer();
+	}
+
+	@Bean(
+		value = "lowerCaseAnalyzer")
+	public Analyzer getLowerCaseAnalyzer() {
+		return new Analyzer() {
+			@Override
+			protected TokenStreamComponents createComponents(String fieldName) {
+				final KeywordTokenizer src = new KeywordTokenizer();
+				TokenStream tok = new LowerCaseFilter(src);
+				return new TokenStreamComponents(src, tok) {
+					@Override
+					protected void setReader(final Reader reader) {
+						super.setReader(reader);
+					}
+				};
+			}
+		};
 	}
 
 	@Bean
@@ -88,4 +116,17 @@ public class LuceneJavaApplication {
 		return new SimpleAnalyzer();
 	}
 
+	@Bean(
+		value = "nGramAnalyzer")
+	public Analyzer getNGramAnalyser() {
+		Analyzer analyzer = new Analyzer() {
+			@Override
+			protected TokenStreamComponents createComponents(String fieldName) {
+				Tokenizer tokenizer = new LowerCaseTokenizer();
+				TokenStream filter = new NGramTokenFilter(tokenizer, 3, 5);
+				return new TokenStreamComponents(tokenizer, filter);
+			}
+		};
+		return analyzer;
+	}
 }
