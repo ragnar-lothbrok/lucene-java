@@ -44,6 +44,14 @@
 			<version>6.2.1</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-phonetic -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-phonetic</artifactId>
+			<version>6.2.1</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>

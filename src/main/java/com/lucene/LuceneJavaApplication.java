@@ -19,6 +19,9 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.NoDeletionPolicy;
+import org.apache.lucene.index.PersistentSnapshotDeletionPolicy;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -52,7 +55,14 @@ public class LuceneJavaApplication {
 		try {
 			Path path = Paths.get(indexDir);
 			Directory directory = FSDirectory.open(path);
-			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getNGramAnalyser());
+//			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getNGramAnalyser());
+			IndexWriterConfig indexWriterConfig = new IndexWriterConfig(getStandardAnalyzer());
+			indexWriterConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
+			PersistentSnapshotDeletionPolicy policy = new
+					PersistentSnapshotDeletionPolicy(NoDeletionPolicy.INSTANCE,FSDirectory.open(Paths.get(indexDir+"/backup")));
+			indexWriterConfig.setIndexDeletionPolicy(policy);
+			indexWriterConfig.setRAMBufferSizeMB(1000);
+			indexWriterConfig.setMaxBufferedDocs(1000);
 			indexWriter = new IndexWriter(directory, indexWriterConfig);
 		} catch (Exception e) {
 			LOGGER.error("Exception occured {}", e);
@@ -75,7 +85,7 @@ public class LuceneJavaApplication {
 		}
 		return indexSearcher;
 	}
-
+	
 	@Bean(
 		value = "whitespaceAnalyzer")
 	public WhitespaceAnalyzer getWhitespaceAnalyzer() {
