@@ -1,4 +1,4 @@
-package com.lucene;
+/*package com.lucene;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -20,7 +20,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.IntPoint;
-import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
@@ -37,6 +37,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
@@ -82,14 +83,14 @@ public class LuceneJavaApplicationTests {
 		value = "lowerCaseAnalyzer")
 	private Analyzer lowerCaseAnalyzer;
 
-	/**
+	*//**
 	 * This will tell you which analyzer to use.
-	 */
+	 *//*
 	// @Test
 	public void contextLoads() {
 
 		Map<String, Analyzer> fieldAnalyserMap = new HashMap<String, Analyzer>();
-		fieldAnalyserMap.put("field", lowerCaseAnalyzer);
+		fieldAnalyserMap.put("field", standardAnalyzer);
 
 		PerFieldAnalyzerWrapper perFieldAnalyzerWrapper = new PerFieldAnalyzerWrapper(nGramAnalyzer, fieldAnalyserMap);
 
@@ -206,11 +207,12 @@ public class LuceneJavaApplicationTests {
 		IndexWriterConfig config = new IndexWriterConfig(standardAnalyzer);
 		IndexWriter indexWriter = new IndexWriter(directory, config);
 
-		String[] contents = { "foxtrot", "echo", "delta", "foxtoyi", "bravo", "alpha" };
-		Integer[] nums = { 10, 20, 30, 40, 50, 60 };
+		String[] contents = { "foxtrot", "echo", "delta", "foxtoyi", "bravo", "alpha", "is baker" };
+		Integer[] nums = { 10, 20, 30, 40, 50, 60, 70 };
 		for (int i = 0; i < contents.length; i++) {
 			Document doc = new Document();
-			doc.add(new StringField("content", contents[i], Field.Store.YES));
+//			doc.add(new StringField("content", contents[i], Field.Store.YES));
+			doc.add(new TextField("content", contents[i], Field.Store.YES));
 			doc.add(new IntPoint("num", nums[i]));
 			indexWriter.addDocument(doc);
 		}
@@ -253,7 +255,7 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-	
+
 		System.out.println("============PREFIX QUERY===============");
 		PrefixQuery prefixQuery = new PrefixQuery(new Term("content", "f"));
 		topDocs = indexSearcher.search(prefixQuery, 8);
@@ -261,7 +263,7 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-		
+
 		System.out.println("============QUERY PARSER 1===============");
 		QueryParser queryParser = new QueryParser("content", standardAnalyzer);
 		Query query = queryParser.parse("[f TO l}");
@@ -270,7 +272,7 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-		
+
 		System.out.println("============QUERY PARSER 2===============");
 		query = queryParser.parse("fox*");
 		topDocs = indexSearcher.search(query, 8);
@@ -278,17 +280,16 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
+
 		
-		/*System.out.println("============QUERY PARSER 3===============");
-		queryParser.setAutoGeneratePhraseQueries(true);
-		query = queryParser.parse("fox+trot");
-		topDocs = indexSearcher.search(query, 8);
-		for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-			Document doc = indexReader.document(scoreDoc.doc);
-			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
-		}*/
-		
-		
+		 * System.out.println("============QUERY PARSER 3===============");
+		 * queryParser.setAutoGeneratePhraseQueries(true); query =
+		 * queryParser.parse("fox+trot"); topDocs = indexSearcher.search(query,
+		 * 8); for (ScoreDoc scoreDoc : topDocs.scoreDocs) { Document doc =
+		 * indexReader.document(scoreDoc.doc); System.out.println(scoreDoc.score
+		 * + ": " + doc.getField("content").stringValue()); }
+		 
+
 		System.out.println("============QUERY PARSER 4===============");
 		queryParser.setDefaultOperator(QueryParser.Operator.OR);
 		query = queryParser.parse("foxtrot echo");
@@ -297,8 +298,8 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-		
-		//TODO
+
+		// TODO
 		System.out.println("============QUERY PARSER 5===============");
 		queryParser.setFuzzyMinSim(2f);
 		queryParser.setFuzzyPrefixLength(3);
@@ -308,7 +309,7 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-		
+
 		System.out.println("============QUERY PARSER 6===============");
 		queryParser.setLowercaseExpandedTerms(true);
 		query = queryParser.parse("FOX*");
@@ -317,9 +318,8 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
-		
-		
-		//TODO
+
+		// TODO
 		System.out.println("============QUERY PARSER 7===============");
 		queryParser.setPhraseSlop(4);
 		queryParser.setDefaultOperator(QueryParser.Operator.AND);
@@ -329,5 +329,25 @@ public class LuceneJavaApplicationTests {
 			Document doc = indexReader.document(scoreDoc.doc);
 			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
 		}
+
+		System.out.println("============QUERY PARSER 8===============");
+		TermQuery termQuery = new TermQuery(new Term("content", "baker"));
+		topDocs = indexSearcher.search(termQuery, 8);
+		for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+			Document doc = indexReader.document(scoreDoc.doc);
+			System.out.println(scoreDoc.score + ": " + doc.getField("content").stringValue());
+		}
+	}
+
+//	@Test
+	public void displayTokenUsingStandardAnalyzer() throws IOException {
+		String text = "is baker";
+		TokenStream tokenStream = standardAnalyzer.tokenStream("content", new StringReader(text));
+		CharTermAttribute termAtt = tokenStream.addAttribute(CharTermAttribute.class);
+		tokenStream.reset();
+		while (tokenStream.incrementToken()) {
+			System.out.print("[" + termAtt.toString() + "] ");
+		}
 	}
 }
+*/

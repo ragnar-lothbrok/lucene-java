@@ -1,4 +1,4 @@
-package com.lucene.Impl;
+/*package com.lucene.Impl;
 
 import java.io.IOException;
 
@@ -51,3 +51,4 @@ public class MySimilarity extends Similarity {
 	}
 
 }
+*/

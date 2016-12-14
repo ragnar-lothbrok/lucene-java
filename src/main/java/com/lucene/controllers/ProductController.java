@@ -1,4 +1,4 @@
-package com.lucene.controllers;
+/*package com.lucene.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,3 +31,4 @@ public class ProductController {
 		return map;
 	}
 }
+*/

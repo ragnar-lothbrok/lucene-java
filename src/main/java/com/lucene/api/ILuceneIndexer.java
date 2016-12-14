@@ -1,4 +1,4 @@
-package com.lucene.api;
+/*package com.lucene.api;
 
 import au.com.bytecode.opencsv.bean.MappingStrategy;
 
@@ -9,3 +9,4 @@ public interface ILuceneIndexer<T> {
 	public MappingStrategy<T> setColumMapping();
 
 }
+*/
