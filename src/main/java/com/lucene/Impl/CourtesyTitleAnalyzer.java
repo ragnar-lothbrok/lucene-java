@@ -1,9 +1,4 @@
-package com.lucene.Impl;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.LetterTokenizer;
+/*package com.lucene.Impl;
 
 public class CourtesyTitleAnalyzer extends Analyzer {
 
@@ -14,4 +9,4 @@ public class CourtesyTitleAnalyzer extends Analyzer {
 		return new TokenStreamComponents(letterTokenizer, filter);
 	}
 
-}
+}*/
